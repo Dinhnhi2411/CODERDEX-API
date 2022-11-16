@@ -2,5 +2,5 @@
 
 CODERDEX-API
 
-npm install and npm run dev to rub on
+#npm #install and #npm #run #dev to run on
 http://localhost:8000
