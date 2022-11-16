@@ -2,7 +2,6 @@ const fs = require("fs");
 const csv = require("csvtojson");
 const { faker } = require("@faker-js/faker");
 
-
 const createData = async () => {
   let data = JSON.parse(fs.readFileSync("db.json"));
 
@@ -12,9 +11,9 @@ const createData = async () => {
   newData = newData.slice(0, 721);
 
   newData = newData.map((pokemon, index) => {
-  let description = faker.lorem.sentence();
+    let description = faker.lorem.sentence();
     const pokemonName =
-    pokemon.name.charAt(0).toLowerCase() + pokemon.name.slice(1);
+      pokemon.name.charAt(0).toLowerCase() + pokemon.name.slice(1);
     console.log(newData);
     if (data.type2) {
       return {
@@ -29,7 +28,7 @@ const createData = async () => {
       };
     } else {
       return {
-         id: index + 1,
+        id: index + 1,
         name: pokemonName,
         description: description,
         height: `${pokemon.height_m} '`,
