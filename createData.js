@@ -12,35 +12,27 @@ const createData = async () => {
 
   newData = newData.map((pokemon, index) => {
     let description = faker.lorem.sentence();
-    const pokemonName =
-      pokemon.name.charAt(0).toLowerCase() + pokemon.name.slice(1);
+    let abilities = faker.hacker.verb();
+    let height = `${faker.datatype.number({ max: 50, precision: 0.1 })}'`;
+    let weight = `${faker.datatype.number({ max: 40, precision: 0.1 })}. lbs`;
+    let category = faker.word.adjective();
+    let type1 = pokemon.Type1.toLowerCase();
+    let type2 = pokemon.Type2?.toLowerCase();
     console.log(newData);
-    if (data.type2) {
-      return {
-        id: index + 1,
-        name: pokemonName,
-        description: description,
-        height: `${pokemon.height_m} '`,
-        weight: `${pokemon.weight_kg} .lbs`,
-        abilities: pokemon.abilities,
-        types: [pokemon.type1, pokemon.type2],
-        url: `http://localhost:8000/images/${index + 1}.jpg`,
-      };
-    } else {
-      return {
-        id: index + 1,
-        name: pokemonName,
-        description: description,
-        height: `${pokemon.height_m} '`,
-        weight: `${pokemon.weight_kg} .lbs`,
-        abilities: pokemon.abilities,
-        types: [pokemon.type1],
-        url: `http://localhost:8000/images/${index + 1}.jpg`,
-      };
-    }
+     return {
+      id: ++index,
+      name: pokemon.Name,
+      types: type2 ? [type1, type2] : [type1],
+      url: `http://localhost:8000/images/${index}.jpg`,
+      description,
+      height,
+      weight,
+      category,
+      abilities,
+    };
   });
 
-  data.totalPokemons = newData.length;
+  data.totalPokemons = [newData.length];
 
   data.data = newData;
 
