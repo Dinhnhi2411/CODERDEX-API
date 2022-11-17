@@ -22,70 +22,59 @@ const pokemonTypes = [
   "rock",
   "water",
 ];
-// GET ALL POKEMONS 
+// GET ALL POKEMONS
 
 router.get("/", (req, res, next) => {
-  const allowedFilter = ["type", "search", "page", "limit"];
+ 
+  const allowFilter = ["search", "type", "page", "limit"];
   try {
     let { page, limit, ...filterQuery } = req.query;
+    console.log(req.query);
+
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 20;
-
     const filterKeys = Object.keys(filterQuery);
-    filterKeys.forEach((key) => {
-      if (!allowedFilter.includes(key)) {
+
+    console.log(filterKeys);
+
+    filterKeys.forEach((key, i) => {
+      if (!allowFilter.includes(key)) {
         const exception = new Error(`Query ${key} is not allowed`);
         exception.statusCode = 401;
         throw exception;
       }
       if (!filterQuery[key]) delete filterQuery[key];
     });
-
-    var index = filterKeys.indexOf("search");
-    if (index !== -1) {
-      filterKeys[index] = "name";
-    }
-    filterQuery["name"] = filterQuery["search"];
-    delete filterQuery["search"];
-
-    var index = filterKeys.indexOf("type");
-    if (index !== -1) {
-      filterKeys[index] = "types";
-    }
-    filterQuery["types"] = filterQuery["type"];
-    delete filterQuery["type"];
-
+  
     let offset = limit * (page - 1);
 
     let db = fs.readFileSync("db.json", "utf-8");
     db = JSON.parse(db);
-    let { data } = db;
-    totalPokemons = data.length;
+    const { data } = db;
 
+    // Filter data by name Pokemon
+
+    console.log(filterKeys);
     let result = [];
+    if (filterKeys.length && filterKeys.includes("search")) {
+      const filterSearch = filterQuery.search;
+      result = result.length
+        ? result.filter((pokemon) => pokemon.name.includes(filterSearch))
+        : data.filter((pokemon) => pokemon.name.includes(filterSearch));
 
-    if (filterKeys.length) {
-      filterKeys.forEach((condition) => {
-        result = {
-          data: data.filter((pokemon) =>
-            pokemon[condition].includes(filterQuery[condition])
-          ),
-          totalPokemons: data.length,
-        };
-      });
+    // Filter data by type
+
+    } else if (filterKeys.length && filterKeys.includes("type")) {
+      let typeSearch = filterQuery.type;
+      result = result.length
+        ? result.filter((pokemon) => pokemon.types.includes(typeSearch))
+        : data.filter((pokemon) => pokemon.types.includes(typeSearch));
     } else {
-      result = {
-        data: data,
-        totalPokemons: data.length,
-      };
+      result = data;
     }
-
-    data = result.data.slice(offset, offset + limit);
-    result = {
-      data: data,
-      totalPokemons: data.length,
-    };
-    res.status(200).send(result);
+    result = result.slice(offset, offset + limit);
+    
+    res.status(200).send({ result });
   } catch (error) {
     next(error);
   }
@@ -143,7 +132,8 @@ router.post("/", (req, res, next) => {
 
     if (!name || !id || !types || !url) {
       const exception = new Error(`Missing required data`);
-      exception.statusCode = 401;
+      console.log();
+      exception.statusCode = 400;
       throw exception;
     }
     if (types.length > 2) {
@@ -229,7 +219,7 @@ router.put("/:pokemonId", (req, res, next) => {
   }
 });
 
-// DELETE POKEMON 
+// DELETE POKEMON
 
 router.delete("/:pokemonId", (req, res, next) => {
   try {

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "json-server --watch db.json",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "product": " node ./bin/www"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
